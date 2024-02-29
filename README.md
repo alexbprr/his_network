@@ -1,1 +1,1 @@
-# his_network
+# Implementation of a network based representation of the Immune System. 
