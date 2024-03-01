@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 use serde::Serialize;
 use serde::Deserialize;
 use std::path::Path;
@@ -123,9 +123,9 @@ pub struct BioNet {
     name: String, 
     #[serde(skip_serializing,skip_deserializing)]
     gen_id: usize,
-    node_list: HashMap<usize,Node>,
-    edge_list: HashMap<usize,Edge>,
-    parameters: HashMap<String,Parameter>,
+    node_list: BTreeMap<usize,Node>,
+    edge_list: BTreeMap<usize,Edge>,
+    parameters: BTreeMap<String,Parameter>,
 }
 //the BioNet current state is the set of values of all nodes 
 
@@ -135,9 +135,9 @@ impl BioNet {
             name: name,
             gen_id: 0,
             //g_size: 0,
-            node_list: HashMap::new(),
-            edge_list: HashMap::new(),
-            parameters: HashMap::new(),
+            node_list: BTreeMap::new(),
+            edge_list: BTreeMap::new(),
+            parameters: BTreeMap::new(),
         }
     }
 
