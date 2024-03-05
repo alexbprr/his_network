@@ -1,5 +1,5 @@
 use std::collections::BTreeMap;
-use std::result;
+use std::collections::HashMap;
 use serde::Serialize;
 use serde::Deserialize;
 use std::path::Path;
@@ -26,9 +26,10 @@ pub enum NodeType {
 pub struct Reaction {
     pub expr_text: String,
     pub numeric_expr: String,
-    pub inputs: Vec<(String,i32)>, //source nodes (in case of an interaction, there are at least two source nodes)  
-    pub outputs: Vec<(String,i32)>, //destination node  
+    pub inputs: Vec<(String,Sign)>, //source nodes (in case of an interaction, there are at least two source nodes)  
+    pub outputs: Vec<(String,Sign)>, //destination node  
     pub rate: f64,
+    pub parameters: Vec<String>, 
 }
 
 impl Reaction {
@@ -40,25 +41,16 @@ impl Reaction {
             inputs: vec![],
             outputs: vec![],
             rate: 0.0,
+            parameters: vec![],
         }
     }
 
     pub fn add_input(&mut self, input_node: String, sign: Sign){
-        if sign == Sign::Negative {
-            self.inputs.push((input_node,-1));
-        }
-        else {
-            self.inputs.push((input_node,1));
-        }
+        self.inputs.push((input_node,sign));
     }
 
     pub fn add_output(&mut self, output_node: String, sign: Sign){
-        if sign == Sign::Negative {
-            self.outputs.push((output_node,-1));
-        }
-        else {
-            self.outputs.push((output_node,1));
-        }
+        self.outputs.push((output_node,sign));
     }
 }
 
@@ -86,7 +78,6 @@ pub struct Edge {
     signs: (Sign,Sign), //source and destination signs
     value: f64, //current value for the reaction 
     expression: Reaction,
-    parameters: Vec<String>, 
 }
 
 impl Edge {
@@ -96,10 +87,9 @@ impl Edge {
             active: true,
             src: src,
             dest: dest,
-            signs: signs,            
+            signs: signs,
             value: 0.0,
-            expression: Reaction::new(),
-            parameters: vec![],
+            expression: Reaction::new(),        
         }
     }
 
@@ -146,7 +136,7 @@ pub struct BioNet {
     gen_id: usize,
     pub node_map: BTreeMap<usize,Node>,
     pub edge_map: BTreeMap<usize,Edge>,
-    pub parameters: BTreeMap<String,Parameter>,
+    pub parameters: HashMap<String,Parameter>,
 }
 
 impl BioNet {
@@ -154,10 +144,9 @@ impl BioNet {
         Self {
             name: name,
             gen_id: 0,
-            //g_size: 0,
             node_map: BTreeMap::new(),
             edge_map: BTreeMap::new(),
-            parameters: BTreeMap::new(),
+            parameters: HashMap::new(),
         }
     }
 
@@ -170,7 +159,7 @@ impl BioNet {
                                                 .iter()
                                                 .map(|v| (v.0.clone(), Parameter::new(v.0.clone(),v.1)))
                                                 .collect();
-        self.parameters = BTreeMap::from_iter(values);
+        self.parameters = HashMap::from_iter(values);
     }
 
     fn add_node(&mut self, node: Node){
@@ -292,6 +281,20 @@ impl BioNet {
         }
         return results 
     }
+
+    pub fn get_nodes_without_output_links(&self) -> Vec<usize> {
+        let mut results: Vec<usize> = vec![];
+        for (id, node) in self.node_map.iter(){
+            if node.output_links.is_empty() {
+                results.push(*id);
+            }
+        }
+        return results
+    } 
+
+    pub fn get_nodes_with_least_number_of_inputs(&self) -> Vec<usize> { unimplemented!()}
+
+    pub fn get_nodes_with_least_number_of_outputs(&self) -> Vec<usize>{ unimplemented!()}
 
     //pub fn build_node_equation(){}
 

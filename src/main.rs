@@ -45,6 +45,12 @@ fn main() {
         print!("{:#?}, ", his_net.node_map[&id].name);
     }
     println!();
+
+    print!("nodes without output links: ");
+    for id in his_net.get_nodes_without_output_links(){
+        print!("{:#?}, ", his_net.node_map[&id].name);
+    }
+    println!();
     
     
     println!("Network: {:#?}", his_net);
