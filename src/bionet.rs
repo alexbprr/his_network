@@ -120,8 +120,8 @@ pub struct BioNet {
     name: String, 
     #[serde(skip_serializing,skip_deserializing)]
     gen_id: usize,
-    pub node_map: BTreeMap<String,Node>,
-    pub edge_map: BTreeMap<usize,Edge>,
+    pub node_map: BTreeMap<String,Node>, //dicionário 
+    pub edge_map: BTreeMap<usize,Edge>, //dicionário
     pub parameters: HashMap<String,Parameter>,
 }
 
